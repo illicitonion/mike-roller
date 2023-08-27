@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style type="text/css">
+            #inputs {
+                display: grid;
+                grid-template-columns: max-content max-content;
+                grid-gap: 5px;
+                margin-bottom: 5px;
+            }
+
+            #inputs label {
+                text-align:right;
+            }
+
+            #inputs label:after {
+                content: ":";
+            }
+
+            #additional-players {
+                display: contents;
+            }
+
+            .dice-result {
+                padding: 4px;
+                border: 1px black solid;
+                margin: 1px;
+            }
+
+            #results {
+                margin-top: 10px;
+            }
+
+            div.dice-results {
+                margin-top: 5px;
+                margin-bottom: 10px;
+            }
+
+            div.outcome {
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+
+            .player0 {
+                background-color: antiquewhite;
+            }
+            .player1 {
+                background-color: aquamarine;
+            }
+            .player2 {
+                background-color: azure;
+            }
+            .player3 {
+                background-color: darkseagreen;
+            }
+            .player4 {
+                background-color: lavenderblush;
+            }
+            .player5 {
+                background-color: mediumorchid;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="inputs">
+            <label for="difficulty">Difficulty</label>
+            <select id="difficulty">
+                <option value="0">Standard</option>
+                <option value="-1">Challenging</option>
+                <option value="-2">Extreme</option>
+                <option value="-3">Monstrous</option>
+            </select>
+
+            <label for="self">Me</label>
+            <input id="self" name="self" type="number" value="0" />
+
+            <button id="add-player">Add player</button><span></span>
+            <div id="additional-players"></div>
+        </div>
+        <button id="roll-button">Roll</button>
+        <script type="text/javascript" src="index.js"></script>
+        <div id="results"></div>
+    </body>
+</html>
