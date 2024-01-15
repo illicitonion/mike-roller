@@ -43,7 +43,8 @@ function roll() {
     if (critFailures > 0) {
         results += `<div class="outcome">${critFailures} crit failure${maybeS(critFailures, "s")} on own dice.</div>`;
     }
-    const critSuccesses = diceByPlayer.flat().filter(d => d === 6).length;
+    const otherPlayerSixes = diceByPlayer.flat().filter(d => d === 6).length;
+    const critSuccesses = Math.floor(otherPlayerSixes / 2);
     if (critSuccesses > 0) {
         results += `<div class="outcome">${critSuccesses} crit success${maybeS(critSuccesses, "es")} on other players' dice.</div>`;
     }
@@ -53,7 +54,7 @@ function roll() {
         1: ["Nothing happens", "Fail forward + fallout"],
         2: ["Success"],
         3: ["Success", "Crit success + fallout"],
-        4: ["Crit success", "Success + bank a success for later"],
+        4: ["Crit success", "Success plus narrative boon"],
     }
     
     const totalSuccesses = selfResults.filter(d => d >= 4).length + diceByPlayer.flat().filter(d => d >= 4).length;
