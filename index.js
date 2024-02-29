@@ -40,6 +40,10 @@ function roll() {
 }
 
 function renderResult() {
+    if (rollState === null) {
+        return;
+    }
+
     let results = "<div class=\"dice-results\">";
     for (const result of rollState.selfResults) {
         results += `<span class="self dice-result">${result}</span>`;
@@ -67,8 +71,16 @@ function renderResult() {
         3: ["Success", "Crit success + fallout"],
         4: ["Crit success", "Success plus narrative boon"],
     }
+
+    const difficulty = getNumberValue("difficulty");
+    // If increase-threshold, each difficulty step increases the needed roll by 1 for a success (and monstrous discounts own dice completely).
+    // If increase-level, each difficulty step worsens the outcome chart by one.
+    const difficultyMode = document.querySelector("#difficulty-mode").value;
+    const successThreshold = Math.min(6, 4 - (difficultyMode === "increase-threshold" ? difficulty : 0));
+
+    const effectiveSelfSuccesses = difficultyMode === "increase-threshold" && difficulty === -3 ? 0 : rollState.selfResults.filter(d => d >= successThreshold).length;
     
-    const totalSuccesses = rollState.selfResults.filter(d => d >= 4).length + rollState.diceByPlayer.flat().filter(d => d >= 4).length;
+    const totalSuccesses = effectiveSelfSuccesses + rollState.diceByPlayer.flat().filter(d => d >= successThreshold).length;
     results += `<div class="outcome">Total success${maybeS(totalSuccesses, "es")}: ${totalSuccesses}</div>`;
     let level;
     if (totalSuccesses >= 6) {
@@ -82,7 +94,7 @@ function renderResult() {
     } else {
         level = 0;
     }
-    level = Math.max(0, level + getNumberValue("difficulty"));
+    level = Math.max(0, level + (difficultyMode === "increase-level" ? getNumberValue("difficulty") : 0));
     results += `<div class="outcome">Outcome${maybeS(levelsToResults[level].length, "s")}: ${levelsToResults[level].join(" OR ")}</div>`;
 
     document.getElementById("results").innerHTML = results;
@@ -120,3 +132,5 @@ function addPlayer() {
 
 const addPlayerButton = document.querySelector("#add-player");
 addPlayerButton.addEventListener("click", addPlayer);
+
+document.querySelector("#difficulty-mode").addEventListener("change", renderResult);
