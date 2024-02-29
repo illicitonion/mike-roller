@@ -12,6 +12,8 @@ function maybeS(count, suffix) {
 
 const players = [];
 
+let rollState = null;
+
 function roll() {
     const selfCount = getNumberValue("self");
 
@@ -29,21 +31,30 @@ function roll() {
         diceByPlayer.push(playerDice);
     }
 
+    rollState = {
+        selfResults: selfResults,
+        diceByPlayer: diceByPlayer,
+    };
+
+    renderResult();
+}
+
+function renderResult() {
     let results = "<div class=\"dice-results\">";
-    for (const result of selfResults) {
+    for (const result of rollState.selfResults) {
         results += `<span class="self dice-result">${result}</span>`;
     }
     for (let i = 0; i < players.length; ++i) {
-        for (const result of diceByPlayer[i]) {
+        for (const result of rollState.diceByPlayer[i]) {
             results += `<span class="player${i} dice-result">${result}</span>`;
         }
     }
     results += "</div>"; // dice-results
-    const critFailures = selfResults.filter(d => d === 1).length;
+    const critFailures = rollState.selfResults.filter(d => d === 1).length;
     if (critFailures > 0) {
         results += `<div class="outcome">${critFailures} crit failure${maybeS(critFailures, "s")} on own dice.</div>`;
     }
-    const otherPlayerSixes = diceByPlayer.flat().filter(d => d === 6).length;
+    const otherPlayerSixes = rollState.diceByPlayer.flat().filter(d => d === 6).length;
     const critSuccesses = Math.floor(otherPlayerSixes / 2);
     if (critSuccesses > 0) {
         results += `<div class="outcome">${critSuccesses} crit success${maybeS(critSuccesses, "es")} on other players' dice.</div>`;
@@ -57,7 +68,7 @@ function roll() {
         4: ["Crit success", "Success plus narrative boon"],
     }
     
-    const totalSuccesses = selfResults.filter(d => d >= 4).length + diceByPlayer.flat().filter(d => d >= 4).length;
+    const totalSuccesses = rollState.selfResults.filter(d => d >= 4).length + rollState.diceByPlayer.flat().filter(d => d >= 4).length;
     results += `<div class="outcome">Total success${maybeS(totalSuccesses, "es")}: ${totalSuccesses}</div>`;
     let level;
     if (totalSuccesses >= 6) {
